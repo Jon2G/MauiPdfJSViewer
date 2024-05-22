@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pdfjs="clr-namespace:MauiPdfJSViewer;assembly=MauiPdfJSViewer"
+             x:Class="MauiPdfJSViewerTests.MainPage" Padding="10">
+
+    <ContentView>
+
+        <Grid RowDefinitions="Auto,*">
+            <VerticalStackLayout Spacing="10" Grid.Row="0">
+                <Button Grid.Column="0" Padding="0"
+           Text="Load from assets" Clicked="Button_Clicked_FromAssets"/>
+                <Button Grid.Column="1" Text="Load from streams" Padding="0" Clicked="Button_Clicked_FromStream"/>
+                <Button Grid.Column="2" Text="Load from path" Padding="0" Clicked="Button_Clicked_FromPath"/>
+
+
+
+            </VerticalStackLayout>
+
+            <pdfjs:PdfJsWebView x:Name="pdfJsViewer" Grid.Row="1" />
+        </Grid>
+    </ContentView>
+
+
+</ContentPage>

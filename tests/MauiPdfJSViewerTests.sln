@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34902.65
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiPdfJSViewerTests", "MauiPdfJSViewerTests.csproj", "{411F7B8C-84EF-48C3-B0BA-FE8D7387F3DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiPdfJSViewer", "..\src\MauiPdfJSViewer.csproj", "{0403FD26-EE6F-498A-B1CB-796C9BB19FEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{411F7B8C-84EF-48C3-B0BA-FE8D7387F3DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{411F7B8C-84EF-48C3-B0BA-FE8D7387F3DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{411F7B8C-84EF-48C3-B0BA-FE8D7387F3DF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{411F7B8C-84EF-48C3-B0BA-FE8D7387F3DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{411F7B8C-84EF-48C3-B0BA-FE8D7387F3DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{411F7B8C-84EF-48C3-B0BA-FE8D7387F3DF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{0403FD26-EE6F-498A-B1CB-796C9BB19FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0403FD26-EE6F-498A-B1CB-796C9BB19FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0403FD26-EE6F-498A-B1CB-796C9BB19FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0403FD26-EE6F-498A-B1CB-796C9BB19FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {515170F5-D4EE-4E78-BF8D-B5EF812A17A6}
+	EndGlobalSection
+EndGlobal
