@@ -1,6 +1,6 @@
 # MauiPdfJSViewer
 
-[![NuGet version (MauiPdfJSViewer)](https://img.shields.io/nuget/v/MauiPdfJSViewer.svg)](https://www.nuget.org/packages/MauiPdfJSViewer/)
+[![NuGet version (PdfJSViewer-MAUI)](https://img.shields.io/nuget/v/PdfJSViewer-MAUI.svg)](https://www.nuget.org/packages/PdfJSViewer-MAUI)
 
  A implementation of pdfjs for android wrapped into a nuget so you can just install and use it. Have fun :). 
  
