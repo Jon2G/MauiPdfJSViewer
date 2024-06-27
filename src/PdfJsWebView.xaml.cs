@@ -55,6 +55,7 @@ this.IsReady=true;
                 var htmlFile = new FileInfo(Path.Combine(dir.FullName, "web/viewer.html"));
                 if (dir.Exists && htmlFile.Exists)
                 {
+                    this.IsReady = true;
                     pdfJsDir = dir.FullName;
                     return;
                 }
@@ -137,7 +138,7 @@ this.IsReady=true;
         if ((NewPageActivated==false && e.NavigationEvent == WebNavigationEvent.NewPage) || e.NavigationEvent == WebNavigationEvent.Refresh)
         {
             NewPageActivated = true;
-            this.pdfviewer.Eval($"PDFViewerApplication.open({{url:'{pdfFilePath}'}})");
+            this.pdfviewer.Eval($"setTimeout(()=>PDFViewerApplication.open({{url:'{pdfFilePath}'}}),50)");
         }
     }
 }
