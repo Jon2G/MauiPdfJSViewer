@@ -8,6 +8,7 @@
 		<UseMaui>true</UseMaui>
 		<SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
 		<SingleProject>true</SingleProject>
+		<Nullable>enable</Nullable>
 		<SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -53,8 +54,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.61" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.61" />
 		<None Include="..\LICENSE">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
@@ -69,6 +70,12 @@
 	  <MauiXaml Update="PdfJsWebView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Platforms\Android\" />
+	  <Folder Include="Platforms\MacCatalyst\" />
+	  <Folder Include="Platforms\Windows\" />
 	</ItemGroup>
 
 </Project>
