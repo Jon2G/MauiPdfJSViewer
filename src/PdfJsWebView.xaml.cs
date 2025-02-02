@@ -12,13 +12,18 @@ using System.Diagnostics;
 
 namespace MauiPdfJSViewer;
 
-public partial class PdfJsWebView : ContentView
+public partial class PdfJsWebView : ContentView, IDisposable
 {
     public WebView InternalWebView { get => this.pdfviewer; }
-    private string? pdfFilePath;
+    private string? PdfFilesCacheFolder;
+    private Task? DeleteTmpFolderIfExistsTask;
+#if ANDROID
     private string? pdfJsDir;
+    private string? pdfFilePath;
+
     private bool IsReady = false;
     private Task? ExpandPdfJsIfNotExistsTask;
+#endif
     public PdfJsWebView()
     {
         InitializeComponent();
@@ -26,10 +31,51 @@ public partial class PdfJsWebView : ContentView
         this.IsReady = false;
         AddPlattformHandlers();
         this.ExpandPdfJsIfNotExists();
-#else
-this.IsReady=true;
 #endif
+        this.DeleteTmpFolderIfExists();
     }
+
+    private void TryDeleteFolder(string path)
+    {
+        try
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+        }
+               catch (Exception ex)
+        {
+#if DEBUG
+            Debug.WriteLine(ex?.Message);
+#endif
+        }
+    }
+
+    private void DeleteTmpFolderIfExists()
+    {
+        try
+        {
+            this.DeleteTmpFolderIfExistsTask = Task.Run(() =>
+            {
+                this.PdfFilesCacheFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "tmp");
+                TryDeleteFolder(this.PdfFilesCacheFolder);
+                Directory.CreateDirectory(this.PdfFilesCacheFolder);
+                //delete temporal files if found
+            });
+            if (DeleteTmpFolderIfExistsTask.Status == TaskStatus.WaitingForActivation)
+            {
+                this.DeleteTmpFolderIfExistsTask.Start();
+            }
+        }
+        catch (Exception ex)
+        {
+#if DEBUG
+            Debug.WriteLine(ex?.Message);
+#endif
+        }
+    }
+
 #if ANDROID
     internal void AddPlattformHandlers()
     {
@@ -43,6 +89,8 @@ this.IsReady=true;
             });
         this.pdfviewer.Navigated += Pdfviewer_Navigated;
     }
+
+
 
     internal void ExpandPdfJsIfNotExists()
     {
@@ -62,8 +110,11 @@ this.IsReady=true;
                 var assembly = Assembly.GetExecutingAssembly();
                 var resourceName = "MauiPdfJSViewer.EmbeddedResource.pdfjs.zip";
 
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-                    ZipFile.ExtractToDirectory(stream, dir.Parent.FullName, true);
+                using (Stream? stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream is null) throw new Exception("Unable to get pdfjs.zip from embedded resources");
+                    ZipFile.ExtractToDirectory(stream, dir.Parent!.FullName, true);
+                }
 
                 pdfJsDir = dir.FullName;
                 this.IsReady = true;
@@ -82,40 +133,29 @@ this.IsReady=true;
     }
 #endif
 
-    public async void LoadPdfFromMauiAssets(string assetName)
-    {
-        using var stream = await FileSystem.OpenAppPackageFileAsync(assetName);
-        this.LoadPdfFromSteam(stream);
-    }
+    public Task LoadPdfFromMauiAssets(string assetName) => this.LoadPdfFromSteam(() => FileSystem.OpenAppPackageFileAsync(assetName));
 
-    public async void LoadPdfFromSteam(Stream pdfStream)
+    public async Task LoadPdfFromSteam(Func<Task<Stream>> pdfStreamFunction)
     {
         await Task.Yield();
         string fileName = $"{Guid.NewGuid():N}.pdf";
 
-        string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), fileName);
+        string filePath = Path.Combine(this.PdfFilesCacheFolder!, fileName);
 
-        using (FileStream file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-            pdfStream.CopyTo(file);
-
-
-#if ANDROID
-        if (!IsReady)
-            await ExpandPdfJsIfNotExistsTask;
-        this.pdfFilePath = filePath;
-        this.Show();
-#else
-
-            this.pdfviewer.Source = filePath;
-#endif
+        using (FileStream file = new(filePath, FileMode.Create, FileAccess.Write))
+        {
+            using Stream pdfStream = await pdfStreamFunction.Invoke();
+            await pdfStream.CopyToAsync(file);
+        }
+        await LoadPdfFromPath(filePath);
     }
 
-    public async void LoadPdfFromPath(string path)
+    public async Task LoadPdfFromPath(string path)
     {
         await Task.Yield();
 #if ANDROID
         if (!IsReady)
-            await ExpandPdfJsIfNotExistsTask;
+            await ExpandPdfJsIfNotExistsTask!;
         this.pdfFilePath = path;
         this.Show();
 #else
@@ -123,22 +163,28 @@ this.IsReady=true;
             this.pdfviewer.Source =path;
 #endif
     }
-
+#if ANDROID
     private void Show()
     {
         //?file=file:///android_asset/{WebUtility.UrlEncode(assetName)}
-        this.pdfviewer.Source = Path.Combine(pdfJsDir, $"web/viewer.html");
+        this.pdfviewer.Source = Path.Combine(pdfJsDir!, $"web/viewer.html");
 
 
         //$"file://{pdfJsDir}/web/viewer.html?file=file:///android_asset/{WebUtility.UrlEncode(assetName)}";
     }
+
     private bool NewPageActivated = false;
-    private void Pdfviewer_Navigated(object sender, WebNavigatedEventArgs e)
+    private void Pdfviewer_Navigated(object? sender, WebNavigatedEventArgs e)
     {
-        if ((NewPageActivated==false && e.NavigationEvent == WebNavigationEvent.NewPage) || e.NavigationEvent == WebNavigationEvent.Refresh)
+        if ((NewPageActivated == false && e.NavigationEvent == WebNavigationEvent.NewPage) || e.NavigationEvent == WebNavigationEvent.Refresh)
         {
             NewPageActivated = true;
             this.pdfviewer.Eval($"setTimeout(()=>PDFViewerApplication.open({{url:'{pdfFilePath}'}}),50)");
         }
+    }
+#endif
+    public void Dispose()
+    {
+        TryDeleteFolder(this.PdfFilesCacheFolder);
     }
 }
